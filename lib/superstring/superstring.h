@@ -15,6 +15,7 @@
  *		[date name]
  *		...
  */
+
 class sstr
 {
 public:

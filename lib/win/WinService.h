@@ -3,6 +3,16 @@
 
 #include <string>
 
+
+/**
+ *	Functionality to manipulate Windows Service
+ *
+ *	@author : taekwonv@gmail.com
+ *	@modified by
+ *		[date name]
+ *		...
+ */
+
 class WinService
 {
 public:
