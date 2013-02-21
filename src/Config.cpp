@@ -1,7 +1,7 @@
 #include "Config.h"
 #include <fstream>
 #include <iostream>
-#include "..\lib\superstring.h"
+#include "superstring/superstring.h"
 
 using namespace std;
 

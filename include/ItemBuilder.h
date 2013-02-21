@@ -15,9 +15,9 @@
 class ItemBuilder
 {
 public:
-	static Item *Build(std::wstring rawItemString);
+	static Item *Build(std::wstring &rawItemString);
 
-	static std::map<std::wstring, Item *(*)()> s_table;
+	static std::map<std::wstring, Item *(*)(std::wstring &rawItemString)> s_table;
 };
 
 

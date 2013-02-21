@@ -1,5 +1,5 @@
 #include "Log.h"
-#include "../lib/superstring.h"
+#include "superstring/superstring.h"
 #include <iostream>
 
 using namespace std;

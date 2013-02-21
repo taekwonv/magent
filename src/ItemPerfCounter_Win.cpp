@@ -1,5 +1,6 @@
 #include "ItemPerfCounter_Win.h"
 #include "ItemBuilder.h"
+#include "Log.h"
 
 using namespace std;
 
@@ -12,8 +13,29 @@ using namespace std;
  *                                                                     |_____|            
  */
 
+/**
+	The follwoing is an example of raw item string of this item.
+	"win.perfcounter("\System\File Write Bytes/sec")"
 
-IMPL_ITEM(ItemPerfCounter_Win, L"PerfCounter");
+	Format : win.perfcounter( windows performance counter string )
+ */
+
+IMPL_ITEM(ItemPerfCounter_Win, L"win.perfcounter");
+
+void ItemPerfCounter_Win::Init(std::wstring &rawItemString)
+{
+	wstring temp;
+	vector<wstring> params;
+	ParseRawItemString(rawItemString, temp, params);
+
+	if (params.size() != 1)
+	{
+		Log::Record(L"The item [%s] does not have any paramter. Not support.", rawItemString.c_str());
+		return;
+	}
+
+	params[0].c_str();
+}
 
 void ItemPerfCounter_Win::Acquire()
 {

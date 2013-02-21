@@ -5,7 +5,8 @@
 #include "Config.h"
 #include <iostream>
 #include "Log.h"
-#include "..\lib\superstring.h"
+#include "superstring/superstring.h"
+#include "ItemBuilder.h"
 
 #define VERSIONSTRING L"0.1.2013"
 
@@ -28,10 +29,22 @@ static void Install()
 }
 
 
+static void AdhocQuery(std::wstring &rawItemString)
+{
+	Item *item = ItemBuilder::Build(rawItemString);
+	if (NULL == item)
+	{
+		std::cout << L"Not support." << std::endl;
+		return;
+	}
+	item->Acquire();
+	std::cout << item->PullLastData().c_str() << std::endl;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	/*if (argc < 2)
-		goto HELPEXIT;*/
+	if (argc < 2)
+		goto HELPEXIT;
 
 	bool conf = Config::Load(L"magent.conf");
 
@@ -51,6 +64,11 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (i+1 == argc) { goto HELPEXIT; }
 				conf = Config::Load(argv[++i]);
 				break;
+
+			case L'q': // run a adhoc query
+				if (i+1 == argc) { goto HELPEXIT; }
+				AdhocQuery(std::wstring(argv[i+1]));
+				return 0;
 
 			case L'-':
 				if (wcscmp(argv[i]+2, L"version") == 0) { goto HELPEXIT; }
