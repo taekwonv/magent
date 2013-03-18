@@ -1,10 +1,3 @@
-#ifndef MAGENT_ITEM_H
-#define MAGENT_ITEM_H
-
-#include <string>
-#include <vector>
-
-
 /**
  *	Item 
  *
@@ -13,6 +6,14 @@
  *	@modified by
  *		[date name]
  */
+
+
+#ifndef MAGENT_ITEM_H
+#define MAGENT_ITEM_H
+
+#include <string>
+#include <vector>
+#include "lock/SpinLock.h"
 
 class Item
 {
@@ -23,15 +24,16 @@ public:
 	bool IsAvailable() const { return m_available; } // if false, it means something is not correct to acquire data. Call GetLastError() for detail reason.
 	std::wstring GetLastError() const { return m_lastErr; }
 	virtual void Init(std::wstring &rawItemString) = 0;	// Derived class must implement this. Parse rawItemString and setup itself as it's respective object.
-	virtual void Acquire(); // Immediately returns. Acqusition must not block the progress.
-	virtual std::wstring PullLastData(); // returns latest value and flush the latest data.
+	virtual void Acquire() = 0; // Immediately returns. Acqusition must not block the progress.
+	virtual void PullLastDataSet(std::vector<std::wstring> &output); // returns latest value and flush the latest data.
 
 protected:
-	static void ParseRawItemString(const std::wstring &itemRawString, std::wstring &funcName, std::vector<std::wstring> &params);
+	static bool ParseRawItemString(const std::wstring &itemRawString, std::wstring &funcName, std::vector<std::wstring> &params);
 
-private:	
 	std::wstring m_lastErr;
+	std::vector<std::wstring>  m_lastDataSet;
 	bool m_available;
+	SpinLock	m_lock;
 };
 
 

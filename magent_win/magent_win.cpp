@@ -7,20 +7,23 @@
 #include "Log.h"
 #include "superstring/superstring.h"
 #include "ItemBuilder.h"
+#include "win/WinService.h"
 
 #define VERSIONSTRING L"0.1.2013"
 
+using namespace std;
+
 static void Help()
 {
-	std::cout << \
+	wcout << \
 		L"magent" \
-		<< std::endl;
+		<< endl;
 }
 
 
 static void Version()
 {
-	std::cout << VERSIONSTRING << std::endl;
+	wcout << VERSIONSTRING << endl;
 }
 
 
@@ -28,17 +31,35 @@ static void Install()
 {
 }
 
-
-static void AdhocQuery(std::wstring &rawItemString)
+static void UnInstall()
 {
-	Item *item = ItemBuilder::Build(rawItemString);
-	if (NULL == item)
+}
+
+static void Restart()
+{
+}
+
+static void Stop()
+{
+}
+
+
+static void AdhocQuery(wstring &rawItemString)
+{
+	Item *p = ItemBuilder::Build(rawItemString);
+	if (NULL == p)
 	{
-		std::cout << L"Not support." << std::endl;
+		wcout << L"Not support." << endl;
 		return;
 	}
+	unique_ptr<Item> item(p);
 	item->Acquire();
-	std::cout << item->PullLastData().c_str() << std::endl;
+	vector<wstring> dataset;
+	item->PullLastDataSet(dataset);
+	if (dataset.size() > 0)
+		wcout << dataset[0].c_str() << endl;
+	else
+		wcout << L"Failed to acquire the data" << endl;
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -58,7 +79,19 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 			case L'i': // install agent as a service
 				Install();
-				break;
+				return 0;
+
+			case L'u': // uninstall agent as a service
+				UnInstall();
+				return 0;
+
+			case L's': // stop agent as a service
+				Stop();
+				return 0;
+
+			case L'r': // restart agent as a service
+				Restart();
+				return 0;
 
 			case L'c': // read a config file from the specified file
 				if (i+1 == argc) { goto HELPEXIT; }
@@ -66,8 +99,20 @@ int _tmain(int argc, _TCHAR* argv[])
 				break;
 
 			case L'q': // run a adhoc query
-				if (i+1 == argc) { goto HELPEXIT; }
-				AdhocQuery(std::wstring(argv[i+1]));
+				{
+					if (i+1 == argc) { goto HELPEXIT; }
+					wstring acc;
+					for (int a=i+1; a < argc; ++a)
+						acc += argv[a];
+
+					#if (1)
+					// BEGIN TEST CODE
+					AdhocQuery(wstring(L"win.perfcounter(\"\\Processor(_Total)\\% Processor Time\")"));
+					// END TEST CODE
+					#else
+					AdhocQuery(acc);
+					#endif
+				}
 				return 0;
 
 			case L'-':
